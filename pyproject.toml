@@ -1,0 +1,26 @@
+[build-system]
+requires = [
+    "setuptools >= 42",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/supertux/version.py"
+
+[project]
+name = "supertux-tool"
+version = "0.0.0"
+description = "SuperTux Origins command line tool"
+authors = [
+  { name = "Ingo Ruhnke", email = "grumbel@gmail.com" }
+]
+
+[tool.setuptools]
+packages = ["supertux"]
+
+[project.scripts]
+supertux-tool = "supertux.cmd_tool:main"
+
+# EOF #
+
