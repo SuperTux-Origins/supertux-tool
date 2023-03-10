@@ -32,7 +32,7 @@ def pretty_print(sx: sexp.Value, indent: int, fout):
 
 def _pretty_print(path: list, stack: list, sx: sexp.Value, depth: int, indent: int, fout):
     width_hint = None
-    if path == "supertux-level.sectors.sector.tilemap" and str(sx[0]) == "tiles":
+    if path == "supertux-level.sectors.sector.objects.tilemap" and str(sx[0]) == "tiles":
         width_hint = get_int_value(stack[-2], 'width')
 
     if not sx.is_array():
@@ -140,8 +140,17 @@ def filter_sx_array(sx: sexp.Value, pred: Callable[[sexp.Value], bool]) -> sexp.
 
 def level_move_sector_to_sectors(sx: sexp.Value) -> sexp.Value:
     supertux_level_tag = sx[0]
-    metadata = [x for x in sx[1:] if str(x[0]) not in ["sector", "version"]]
-    sectors = [x for x in sx[1:] if str(x[0]) in ["sector"]]
+    metadata = [x for x in sx[1:] if str(x[0]) not in ["sectors", "version"]]
+    # sectors = [x for x in sx[1:] if str(x[0]) in ["sector"]]
+    sectors = [x for x in sx[1:] if str(x[0]) in ["sectors"]][0][1:]
+
+    for idx, sector in enumerate(sectors):
+        sector_metadata = [x for x in sector[1:] if str(x[0]) in ["name", "init-script"]]
+        sector_objects = [x for x in sector[1:] if str(x[0]) not in ["name", "init-script"]]
+        sectors[idx] = sexp.Array([sexp.Symbol("sector")] +
+                                  sector_metadata +
+                                  [sexp.Array([sexp.Symbol("objects")] +
+                                              sector_objects)])
 
     return sexp.Array(
         [supertux_level_tag] +
